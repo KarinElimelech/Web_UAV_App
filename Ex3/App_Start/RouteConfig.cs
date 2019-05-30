@@ -18,8 +18,10 @@ namespace Ex3
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
-            routes.MapRoute("display", "{controller}/display/{ip}/{port}",
-                defaults: new { Controller = "Home", action = "display" });
+            routes.MapRoute("display", "{controller}/display/{ip}/{port}/{time}",
+                defaults: new { Controller = "Home", action = "display", time = 0 });
+
+           
         }
     }
 }

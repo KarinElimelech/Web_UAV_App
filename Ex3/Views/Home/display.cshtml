@@ -7,16 +7,40 @@
 <body background="~/Content/export-map-share.png" style="background-size:100% 100%; background-attachment:fixed">
     <canvas id="myCanvas" style="background-size:100% 100%">
         <script>
-            var lon = @ViewBag.lon;
-            var lat = @ViewBag.lat;
-            var can = document.getElementById("myCanvas")
-            var ctx = can.getContext("2d")
-            var newlat = ((lat) + 90) * (180/ can.width );
-            var newlon = ((lon) + 180) * (360/can.height);
-            ctx.beginPath();
-            ctx.arc(newlon, newlat, 10, 10,20* Math.PI);
-            ctx.fillStyle = "Red";
-            ctx.fill();
+
+
+            function drawPoint(string lon, string lat) {
+                var can = document.getElementById("myCanvas")
+                var ctx = can.getContext("2d")
+                var newlat = (parseFloat(lat) + 90) * (180 / can.width);
+                var newlon = (parseFloat(lon) + 180) * (360 / can.height);
+                ctx.beginPath();
+                ctx.arc(newlon, newlat, 10, 10, 20 * Math.PI);
+                ctx.fillStyle = "Red";
+                ctx.fill();
+            }
+          
+            var IntervalTime = @ViewBag.time;
+            IntervalTime = IntervalTime * 1000;
+            myTimer = (function () {
+            $.post( "@Url.Action("GetCoordinate")").done(function (xml) {
+                var xmlDoc = $.parseXML( xml ),
+                $xml = $( xmlDoc ),
+                lon = $xml.find( "Lon" ).text();
+                lat = $xml.find("Lat").text();
+                drawPoint(lon, lat);
+                alert(lon);
+                });
+            });
+
+
+            if (IntervalTime != 0) {
+                setInterval(myTimer, IntervalTime);
+                myTimer();
+            } else {
+                myTimer();
+            }
+            
         </script>
     </canvas>
 </>
