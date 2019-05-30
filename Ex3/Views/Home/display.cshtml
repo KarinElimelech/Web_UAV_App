@@ -11,8 +11,8 @@
             var lat = @ViewBag.lat;
             var can = document.getElementById("myCanvas")
             var ctx = can.getContext("2d")
-            var newlat = ((lat) + 90) * (180/ can.width );
-            var newlon = ((lon) + 180) * (360/can.height);
+            var newlat = ((lat) + 90);
+            var newlon = ((lon) + 180);
             ctx.beginPath();
             ctx.arc(newlon, newlat, 10, 10,20* Math.PI);
             ctx.fillStyle = "Red";
