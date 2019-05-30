@@ -4,23 +4,22 @@
 
 }
 
-<body background="~/Content/export-map-share.png" style="background-size:100% 100%; background-attachment:fixed;
-    position:absolute;top:-90;left:-180;z-index:-5000;top:90;right:180">
-    <canvas id="myCanvas" style="border:-90px; width=100%; height=100%; position:relative;">
+<body background="~/Content/export-map-share.png" style="background-size:100% 100%; background-attachment:fixed">
+    <canvas id="myCanvas" style="background-size:100% 100%">
         <script>
             var lon = @ViewBag.lon;
             var lat = @ViewBag.lat;
-            x = (window.innerWidth / 360) * (parseFloat(lon.valueOf()) + 180);
-            y = (window.innerHeight / 180) * (parseFloat(lat.valueOf()) + 90);
             var can = document.getElementById("myCanvas")
-            var ctx=can.getContext("2d")
+            var ctx = can.getContext("2d")
+            var newlat = ((lat) + 90) * (180/ can.width );
+            var newlon = ((lon) + 180) * (360/can.height);
             ctx.beginPath();
-            ctx.arc(-10, -10, 51, 10,20* Math.PI, false);
+            ctx.arc(newlon, newlat, 10, 10,20* Math.PI);
             ctx.fillStyle = "Red";
             ctx.fill();
         </script>
     </canvas>
-</body>
+</>
 
 
 
