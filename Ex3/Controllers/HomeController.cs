@@ -19,8 +19,12 @@ namespace Ex3.Controllers
         public ActionResult display(string ip, int port)
         {
             Connect.Instance.Open(ip,port);
+            ViewBag.lon = Connect.Instance.Lon;
+            ViewBag.lat = Connect.Instance.Lat;
             return View();
         }
+
+        
 
     }
 }

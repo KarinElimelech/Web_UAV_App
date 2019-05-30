@@ -13,11 +13,11 @@ namespace Ex3.Models
     {
         private readonly static object locker = new object();
         private NetworkStream stream = null;
+        private TcpClient client;
         private static Connect self = null;
-        private bool connected;
-        private const string lon = "get /position/longitude-deg\r\n";
-        private const string lat = "get /position/latitude-deg\r\n";
-        private TcpListener listen;
+        private BinaryWriter binaryWriter;
+        private BinaryReader binaryReader;
+        private bool connected = false;
 
         /**
          * The Instance static property for the Singleton getter.
@@ -44,23 +44,21 @@ namespace Ex3.Models
             return this.connected;
         }
 
-        TcpClient client = new TcpClient();
+        
 
         /**
          * Open a new Tcp Client connection to the server.
          * */
         public void Open(string ip, int port)
         {
-            IPEndPoint ep1 = new IPEndPoint(IPAddress.Parse(ip), port);
-            this.listen = new TcpListener(IPAddress.Parse(ip), port);
-            listen.Start();
-            while (!client.Connected)
-            {
-                client.Connect(ep1);
-                Debug.WriteLine("Command channel :You are connected");
-                this.connected = true;
-            }
-            this.stream = client.GetStream();
+            if (connected) return;
+            this.client = new TcpClient(ip, port);
+            stream = client.GetStream();
+            stream.Flush();
+            Console.WriteLine("Conncted");
+            binaryReader = new BinaryReader(this.stream);
+            binaryWriter = new BinaryWriter(this.stream);
+
         }
 
         /**
@@ -75,37 +73,41 @@ namespace Ex3.Models
         /**
          * Sends the string to the server.
          * */
-        private void Sender(string toSend)
+        private double GetInfo(string toSend)
         {
-           // convert the command string to an array of bytes.
-           byte[] buffer = System.Text.Encoding.ASCII.GetBytes(toSend.ToString());
-           stream.Write(buffer, 0, buffer.Length);
-           Console.WriteLine("command: " + toSend);
-           stream.Flush();     
-        }
-
-        private string Reader()
-        {
-            string msg="";
-            Byte[] bytes;
-            if (client.ReceiveBufferSize > 0)
+            // convert the command string to an array of bytes.
+            binaryWriter.Write(Encoding.ASCII.GetBytes(toSend));
+            char c;
+            string input = "";
+            while ((c = binaryReader.ReadChar()) != '\n')
             {
-                bytes = new byte[client.ReceiveBufferSize];
-                stream.Read(bytes, 0, client.ReceiveBufferSize);
-                msg = Encoding.ASCII.GetString(bytes);
+                input += c;
             }
-            return msg;
+            stream.Flush();
+            return Parser(input);
         }
 
-        /**
-         * Sends all commands to the server, waiting two seconds between commands.
-         * */
-        public void Send(List<string> cmds)
+        // TODO - check if there is problem here when we read 4hz
+        private double Parser(string toParse)
         {
-            if (null == client) { return; }
-            Sender(lon);
-            
-            Sender(lat);
+            string[] words = toParse.Split('\'');
+            return Convert.ToDouble(words[1]);
+        }
+
+        public double Lon
+        {
+            get
+            {
+                return GetInfo("get /position/longitude-deg\r\n");
+            }
+        }
+
+        public double Lat
+        {
+            get
+            {
+                return GetInfo("get /position/latitude-deg\r\n");
+            }
         }
 
         /**
@@ -115,7 +117,6 @@ namespace Ex3.Models
         {
             return this.client != null;
         }
-
 
     }
 }

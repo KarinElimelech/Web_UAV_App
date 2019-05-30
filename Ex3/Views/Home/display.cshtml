@@ -1,10 +1,27 @@
 ﻿
 @{
     ViewBag.Title = "display";
+
 }
 
+<body background="~/Content/export-map-share.png" style="background-size:100% 100%; background-attachment:fixed;
+    position:absolute;top:-90;left:-180;z-index:-5000;top:90;right:180">
+    <canvas id="myCanvas" style="border:-90px; width=100%; height=100%; position:relative;">
+        <script>
+            var lon = @ViewBag.lon;
+            var lat = @ViewBag.lat;
+            x = (window.innerWidth / 360) * (parseFloat(lon.valueOf()) + 180);
+            y = (window.innerHeight / 180) * (parseFloat(lat.valueOf()) + 90);
+            var can = document.getElementById("myCanvas")
+            var ctx=can.getContext("2d")
+            ctx.beginPath();
+            ctx.arc(-10, -10, 51, 10,20* Math.PI, false);
+            ctx.fillStyle = "Red";
+            ctx.fill();
+        </script>
+    </canvas>
+</body>
 
-<img src="~/Content/export-map-share.png" alt="World Map" style="width:100%;height:100%;
-        position:absolute;top:-90;left:-180;z-index:-5000;top:90;right:180" />
+
 
 
