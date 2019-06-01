@@ -13,11 +13,10 @@ namespace Ex3.Models
     {
         private readonly static object locker = new object();
         private NetworkStream stream = null;
-        private TcpClient client;
+        private TcpClient client = null;
         private static Connect self = null;
         private BinaryWriter binaryWriter;
         private BinaryReader binaryReader;
-        private bool connected = false;
 
         /**
          * The Instance static property for the Singleton getter.
@@ -38,27 +37,18 @@ namespace Ex3.Models
         }
 
         
-
-        bool isConnected()
-        {
-            return this.connected;
-        }
-
-        
-
         /**
          * Open a new Tcp Client connection to the server.
          * */
         public void Open(string ip, int port)
         {
-            if (connected) return;
+            if (client != null) return;
             this.client = new TcpClient(ip, port);
             stream = client.GetStream();
             stream.Flush();
             Console.WriteLine("Conncted");
             binaryReader = new BinaryReader(this.stream);
             binaryWriter = new BinaryWriter(this.stream);
-
         }
 
         /**
@@ -73,41 +63,31 @@ namespace Ex3.Models
         /**
          * Sends the string to the server.
          * */
-        private double GetInfo(string toSend)
+        public string this[string toSend]
         {
-            // convert the command string to an array of bytes.
-            binaryWriter.Write(Encoding.ASCII.GetBytes(toSend));
-            char c;
-            string input = "";
-            while ((c = binaryReader.ReadChar()) != '\n')
+            get
             {
-                input += c;
+                lock(locker) {
+                    // convert the command string to an array of bytes.
+                    binaryWriter.Write(Encoding.ASCII.GetBytes(toSend));
+                    char c;
+                    string input = "";
+                    while ((c = binaryReader.ReadChar()) != '\n')
+                    {
+                        input += c;
+                    }
+                    stream.Flush();
+                    return Parser(input);
+                }
             }
-            stream.Flush();
-            return Parser(input);
         }
+
 
         // TODO - check if there is problem here when we read 4hz
-        private double Parser(string toParse)
+        private string Parser(string toParse)
         {
             string[] words = toParse.Split('\'');
-            return Convert.ToDouble(words[1]);
-        }
-
-        public double Lon
-        {
-            get
-            {
-                return GetInfo("get /position/longitude-deg\r\n");
-            }
-        }
-
-        public double Lat
-        {
-            get
-            {
-                return GetInfo("get /position/latitude-deg\r\n");
-            }
+            return words[1];
         }
 
         /**
@@ -115,7 +95,7 @@ namespace Ex3.Models
          * */
         public bool IsConnected()
         {
-            return this.client != null;
+            return client != null;
         }
 
     }
