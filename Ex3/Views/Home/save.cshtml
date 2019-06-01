@@ -3,5 +3,58 @@
     ViewBag.Title = "save";
 }
 
-<h2>save</h2>
+
+<canvas id="myCanvas" style="background-size:100% 100%"></canvas>
+<script>
+        var prevLon=null;
+        var prevLat=null;
+        var can = document.getElementById("myCanvas");
+        var ctx = can.getContext("2d");
+
+        function drawPoint(lon, lat) {
+            ctx.beginPath();
+            ctx.arc(lon, lat, 5, 5, 10 * Math.PI);
+            ctx.fillStyle = "Red";
+            ctx.fill();
+        }
+
+        function drawLine(newlon, newlat) {
+            ctx.beginPath();
+            ctx.moveTo(prevLon, prevLat);
+            ctx.lineTo(newlon, newlat);
+            ctx.strokeStyle = "#FF0000";
+            ctx.stroke();
+        }
+
+        function main() {
+            var IntervalTime = @ViewBag.time;
+            IntervalTime = 1000 * IntervalTime;
+            myTimer = (function () {
+                $.post("@Url.Action("RouteSaver")").done(function (xml) {
+                    var xmlDoc = $.parseXML(xml);
+                    $xml = $(xmlDoc);
+                    lon = $xml.find("Lon").text();
+                    lat = $xml.find("Lat").text();
+                    var newlon = (parseFloat(lon) + 180) * (can.width/360);
+                    var newlat = (parseFloat(lat) + 90) * (can.height/180);
+                    if (prevLat == null || prevLon == null) {
+                        drawPoint(newlon, newlat);
+                    }
+                    else {
+                        drawLine(newlon, newlat);
+                    }
+                    prevLon = newlon;
+                    prevLat = newlat;
+                });
+            });
+            if (IntervalTime != 0) {
+                setInterval(myTimer, IntervalTime);
+            }
+            myTimer();
+            }
+
+            main();
+</script>
+</>
+
 

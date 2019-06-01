@@ -12,6 +12,7 @@ namespace Ex3.Controllers
     public class HomeController : Controller
     {
         private Connect client = Connect.Instance;
+        private TimeTracker timer = TimeTracker.Instance;
         // GET: Home
         public ActionResult Index()
         {
@@ -21,7 +22,23 @@ namespace Ex3.Controllers
         [HttpGet]
         public ActionResult save(string ip, int port, int rate, int time, string fileName)
         {
+            client.Open(ip, port);
+            ViewBag.time = rate;
+            ViewBag.file = fileName;
+            timer.Interval = time;
             return View();
+        }
+
+        [HttpPost]
+        public string RouteSaver()
+        {
+            timer.StartTimer();
+            if(timer.isRunning)
+            {
+                //TODO: save to file
+                Console.WriteLine("Still Active");
+            }
+            return GetCoordinate();
         }
         
         [HttpGet]
