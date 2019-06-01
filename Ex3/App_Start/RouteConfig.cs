@@ -21,6 +21,9 @@ namespace Ex3
             routes.MapRoute("display", "{controller}/display/{ip}/{port}/{time}",
                 defaults: new { Controller = "Home", action = "display", time = 0 });
 
+            routes.MapRoute("displayFlight", "{controller}/display/{fileName}/{time})",
+                defaults: new { Controller = "Home", action = "displayFlight"});
+
             routes.MapRoute("save", "{controller}/save/{ip}/{port}/{rate}/{time}/{fileName}",
                 defaults: new { Controller = "Home", action = "save" });
         }

@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 using System.Text;
+using System.IO;
 
 namespace Ex3.Controllers
 {
@@ -24,22 +25,29 @@ namespace Ex3.Controllers
         {
             client.Open(ip, port);
             ViewBag.time = rate;
-            ViewBag.file = fileName;
             timer.Interval = time;
+            Session["file"] = fileName;
             return View();
         }
+
 
         [HttpPost]
         public string RouteSaver()
         {
             timer.StartTimer();
-            if(timer.isRunning)
+            Info flightInfo = Info.Instance;
+            string lon = client["get /position/longitude-deg\r\n"];
+            string lat = client["get /position/latitude-deg\r\n"];
+            if (timer.isRunning)
             {
-                //TODO: save to file
-                Console.WriteLine("Still Active");
+                string throttle = client["get /controls/engines/current-engine/throttle\r\n"];
+                string rudder = client["get /controls/flight/rudder\r\n"];
+                flightInfo.WriteToFile(Convert.ToString(Session["file"]),lon,lat,throttle,rudder);
             }
-            return GetCoordinate();
+            return toXML(lon,lat);
         }
+
+        
         
         [HttpGet]
         public ActionResult display(string ip, int port, int time)
@@ -55,7 +63,7 @@ namespace Ex3.Controllers
             string lon = client["get /position/longitude-deg\r\n"];
             string lat = client["get /position/latitude-deg\r\n"];
             return toXML(lon, lat);
-        } 
+        }
 
         public string toXML(string lon, string lat)
         {
@@ -74,6 +82,23 @@ namespace Ex3.Controllers
             writer.WriteEndDocument();
             writer.Flush();
             return sb.ToString();
-        } 
+        }
+
+        [HttpGet]
+        public ActionResult displayFlight(string fileName, int time)
+        {
+            ViewBag.time = time;
+            return View();
+        }
+
+        [HttpPost]
+        public string GetState()
+        {
+            Info flightInfo = Info.Instance;
+            
+            return "temp";
+        }
+        
+
     }
 }

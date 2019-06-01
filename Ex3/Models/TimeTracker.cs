@@ -40,6 +40,11 @@ namespace Ex3.Models
             {
                 lock(mutex)
                 {
+                    if (timePassed)
+                    {
+                        timePassed = false;
+                        startTime = DateTime.MinValue;
+                    }
                     interval = TimeSpan.FromSeconds(value);
                 }
             }
@@ -51,6 +56,7 @@ namespace Ex3.Models
             {
                 if (startTime == DateTime.MinValue)
                 {
+                    timePassed = false;
                     startTime = DateTime.Now;
                 }
             }
