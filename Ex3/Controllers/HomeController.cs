@@ -1,5 +1,6 @@
 ﻿using Ex3.Models;
 using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +19,14 @@ namespace Ex3.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult displayFromServer(string ip, int port, int time)
+        {
+            client.Open(ip, port);
+            ViewBag.time = time;
+            return View("display");
         }
 
         [HttpGet]
@@ -44,7 +53,10 @@ namespace Ex3.Controllers
                 string rudder = client["get /controls/flight/rudder\r\n"];
                 flightInfo.WriteToFile(Convert.ToString(Session["file"]),lon,lat,throttle,rudder);
             }
-            return toXML(lon,lat);
+            List<string> param = new List<string>();
+            param.Add(lon);
+            param.Add(lat);
+            return toXML(param);
         }
 
         
@@ -52,53 +64,75 @@ namespace Ex3.Controllers
         [HttpGet]
         public ActionResult display(string ip, int port, int time)
         {
-            client.Open(ip, port);
-            ViewBag.time = time;
-            return View();
+            try
+            {
+                IPAddress.Parse(ip);
+                return displayFromServer(ip, port, time);
+            }
+            catch (FormatException e)
+            {
+                return displayFlight(ip, port);
+            }
         }
 
         [HttpPost]
         public string GetCoordinate()
         {
-            string lon = client["get /position/longitude-deg\r\n"];
-            string lat = client["get /position/latitude-deg\r\n"];
-            return toXML(lon, lat);
+            List<string> param = new List<string>();
+            param.Add(client["get /position/longitude-deg\r\n"]);
+            param.Add(client["get /position/latitude-deg\r\n"]);
+            return toXML(param);
         }
 
-        public string toXML(string lon, string lat)
+        public string toXML(List<string> param)
         {
             //Initiate XML stuff
             StringBuilder sb = new StringBuilder();
             XmlWriterSettings settings = new XmlWriterSettings();
             XmlWriter writer = XmlWriter.Create(sb, settings);
-
+            
             writer.WriteStartDocument();
-            writer.WriteStartElement("Point");
+            if (param.Count > 1)
+            {
+                writer.WriteStartElement("Point");
 
-            writer.WriteElementString ("Lon", lon);
-            writer.WriteElementString("Lat", lat);
+                writer.WriteElementString("Lon", param[0]);
+                writer.WriteElementString("Lat", param[1]);
+            }
+            else
+            {
+                writer.WriteStartElement("alert");
+                writer.WriteElementString(param[0],param[0]);
+            }
 
             writer.WriteEndElement();
             writer.WriteEndDocument();
+
             writer.Flush();
             return sb.ToString();
         }
 
+
         [HttpGet]
         public ActionResult displayFlight(string fileName, int time)
         {
+            Info.Instance.ReadData(fileName);
             ViewBag.time = time;
-            return View();
+            return View("displayFlight");
         }
 
         [HttpPost]
         public string GetState()
         {
-            Info flightInfo = Info.Instance;
-            
-            return "temp";
+            string input = Info.Instance.Next;
+            List<string> param = new List<string>();
+            if (input == "") param.Add("error");
+            else if (input == "END") param.Add("END");
+            else
+            {
+                param = input.Split(',').ToList();
+            }
+            return toXML(param);
         }
-        
-
     }
 }

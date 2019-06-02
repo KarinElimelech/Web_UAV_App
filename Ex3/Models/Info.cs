@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,7 +11,8 @@ namespace Ex3.Models
     {
         private static Info instance = null;
         public const string SCENARIO_FILE = "~/App_Data/{0}.txt";
-
+        private List<string> fromFile = null;
+        private IEnumerator reader = null;
         public static Info Instance
         {
             get
@@ -23,6 +25,21 @@ namespace Ex3.Models
             }
         }
 
+        public string Next
+        {
+            get
+            {
+                if (fromFile == null) return "";
+                if(reader.MoveNext())
+                {
+                    return Convert.ToString(reader.Current);
+                } else
+                {
+                    return "END";
+                }
+            }
+        }
+
         public void WriteToFile(string fileName, string lon, string lat,
             string throttle, string rudder)
         {
@@ -31,15 +48,24 @@ namespace Ex3.Models
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
             {
                 file.WriteLine(lon + "," + lat + "," + throttle + "," + rudder);
+               
             }
         }
 
-        //TODO - change to useful .. 
-        public string[] ReadData(string filename)
+
+        public void ReadData(string filename)
         {
+            fromFile = new List<string>();
             string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, filename));
-            return System.IO.File.ReadAllLines(path);
-             
+            using (System.IO.StreamReader fileReader = new System.IO.StreamReader(path, true))
+            {
+                string line;
+                while ((line = fileReader.ReadLine()) != null)
+                {
+                    fromFile.Add(line);
+                }
+            }
+            reader = fromFile.GetEnumerator();
         }
     }
        
