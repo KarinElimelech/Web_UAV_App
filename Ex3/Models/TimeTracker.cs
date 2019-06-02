@@ -13,12 +13,18 @@ namespace Ex3.Models
         private bool timePassed;
         private readonly static object mutex = new object();
 
+        /**
+         * CTOR
+         */
         private TimeTracker()
         {
             timePassed = false;
             startTime = DateTime.MinValue;
         }
 
+        /**
+         * singleton
+         */
         public static TimeTracker Instance
         {
             get
@@ -34,6 +40,9 @@ namespace Ex3.Models
             }
         }
 
+        /**
+         * set the interval of time tracker
+         */
         public double Interval
         {
             set
@@ -50,6 +59,9 @@ namespace Ex3.Models
             }
         }
 
+        /**
+         * init timer
+         */
         public void StartTimer()
         {
             lock(mutex)
@@ -62,6 +74,10 @@ namespace Ex3.Models
             }
         }
 
+        /**
+         * bool funct- true if the time tracker still running, false - else.
+         * check the time from the begin to curr
+         */
         public bool isRunning
         {
             get

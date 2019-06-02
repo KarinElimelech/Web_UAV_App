@@ -83,7 +83,9 @@ namespace Ex3.Models
         }
 
 
-        // TODO - check if there is problem here when we read 4hz
+        /**
+         * the function gets string and parse it.
+         */
         private string Parser(string toParse)
         {
             string[] words = toParse.Split('\'');

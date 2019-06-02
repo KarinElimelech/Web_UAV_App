@@ -13,6 +13,10 @@ namespace Ex3.Models
         public const string SCENARIO_FILE = "~/App_Data/{0}.txt";
         private List<string> fromFile = null;
         private IEnumerator reader = null;
+        
+        /**
+         * singleton
+         */
         public static Info Instance
         {
             get
@@ -25,6 +29,11 @@ namespace Ex3.Models
             }
         }
 
+        /**
+         * the function get the next line from the iterator and return it
+         * if there is no file - return ""
+         * if the iter done - return END
+         */
         public string Next
         {
             get
@@ -40,11 +49,14 @@ namespace Ex3.Models
             }
         }
 
+        /**
+         * param :string fileName, string lon, string lat, string throttle, string rudder
+         * the fnction open file and save the parameter
+         */
         public void WriteToFile(string fileName, string lon, string lat,
             string throttle, string rudder)
         {
             string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, fileName));
-            //FileStream stream = File.Open(path,FileMode.Open, FileAccess.Write);   
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
             {
                 file.WriteLine(lon + "," + lat + "," + throttle + "," + rudder);
@@ -52,7 +64,11 @@ namespace Ex3.Models
             }
         }
 
-
+        /**
+         * param: fileName
+         * the function get file name
+         * open and read from the file to list.
+         */
         public void ReadData(string filename)
         {
             fromFile = new List<string>();

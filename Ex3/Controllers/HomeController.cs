@@ -16,11 +16,20 @@ namespace Ex3.Controllers
         private Connect client = Connect.Instance;
         private TimeTracker timer = TimeTracker.Instance;
         // GET: Home
+
+        /**
+         * the function return the default view
+         */
         public ActionResult Index()
         {
             return View();
         }
 
+        /**
+         * params: ip, port, time interval
+         * the function open communication with the givin ip and port
+         * and save the time and call display view
+         */
         [HttpGet]
         public ActionResult displayFromServer(string ip, int port, int time)
         {
@@ -29,6 +38,12 @@ namespace Ex3.Controllers
             return View("display");
         }
 
+        /**
+         * params: ip, port, rate - time interval, time - run duration, fileName
+         * the function open communication with the givin ip and port
+         * and save to the viewBag the rate and to session the file.
+         * and reutrn the view.
+         */
         [HttpGet]
         public ActionResult save(string ip, int port, int rate, int time, string fileName)
         {
@@ -39,7 +54,13 @@ namespace Ex3.Controllers
             return View();
         }
 
-
+        /**
+         * returnVal - string builder
+         * the function init timer, and get info of lon,lat, throttle and rudder
+         * from the client
+         * if the timer not done save to file
+         * if done rerurn the lon and lat val
+         */
         [HttpPost]
         public string RouteSaver()
         {
@@ -59,8 +80,13 @@ namespace Ex3.Controllers
             return toXML(param);
         }
 
-        
-        
+
+        /**
+         * param: ip, port, time.
+         * the function get ip port and time
+         * if the string is valid ip c- call displayFromServer
+         * else call displayFlight
+         */
         [HttpGet]
         public ActionResult display(string ip, int port, int time)
         {
@@ -75,6 +101,11 @@ namespace Ex3.Controllers
             }
         }
 
+        /**
+         * returnVal - string builder.
+         * the function gets from the client the lon and lat val
+         * and save in XML
+         */
         [HttpPost]
         public string GetCoordinate()
         {
@@ -84,6 +115,12 @@ namespace Ex3.Controllers
             return toXML(param);
         }
 
+        /**
+         * param: the function gets list of string - parameters
+         * create new XML file
+         * save the parameters to the XML
+         * and return the string builder.
+         */
         public string toXML(List<string> param)
         {
             //Initiate XML stuff
@@ -112,7 +149,12 @@ namespace Ex3.Controllers
             return sb.ToString();
         }
 
-
+        /**
+         * params: fileName, time
+         * the function read data from the file
+         * save the time
+         * and call the displayFlight view.
+         */
         [HttpGet]
         public ActionResult displayFlight(string fileName, int time)
         {
@@ -121,6 +163,12 @@ namespace Ex3.Controllers
             return View("displayFlight");
         }
 
+        /**
+         * returnVal: string builder
+         * the function get the next line of data
+         * split it
+         * and send to XML
+         */
         [HttpPost]
         public string GetState()
         {

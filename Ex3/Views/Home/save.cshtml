@@ -11,6 +11,11 @@
         var can = document.getElementById("myCanvas");
         var ctx = can.getContext("2d");
 
+         /**
+         * the function draw point on the canvas
+         * param lon x
+         * param lat y
+         */
         function drawPoint(lon, lat) {
             ctx.beginPath();
             ctx.arc(lon, lat, 5, 5, 10 * Math.PI);
@@ -18,6 +23,12 @@
             ctx.fill();
         }
 
+        /**
+         * the function draw line from the old lon lat to new
+         * lon lat values
+         * newlon val 
+         * newlat val
+         */
         function drawLine(newlon, newlat) {
             ctx.beginPath();
             ctx.moveTo(prevLon, prevLat);
@@ -26,9 +37,18 @@
             ctx.stroke();
         }
 
+        /**
+         * the main function = 
+         * set the time interval
+         * if bigger than 0 - call mytimer with time intervl - repeat the function for x time
+         * else call my timer once.
+         * */
         function main() {
             var IntervalTime = @ViewBag.time;
             IntervalTime = 1000 * IntervalTime;
+            /**
+             * get the lon and lat val from the xml and draw point and line
+             */
             myTimer = (function () {
                 $.post("@Url.Action("RouteSaver")").done(function (xml) {
                     var xmlDoc = $.parseXML(xml);
