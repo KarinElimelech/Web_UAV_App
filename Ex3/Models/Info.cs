@@ -13,7 +13,8 @@ namespace Ex3.Models
         public const string SCENARIO_FILE = "~/App_Data/{0}.txt";
         private List<string> fromFile = null;
         private IEnumerator reader = null;
-        
+        string filePath;
+
         /**
          * singleton
          */
@@ -39,10 +40,11 @@ namespace Ex3.Models
             get
             {
                 if (fromFile == null) return "";
-                if(reader.MoveNext())
+                if (reader.MoveNext())
                 {
                     return Convert.ToString(reader.Current);
-                } else
+                }
+                else
                 {
                     return "END";
                 }
@@ -50,19 +52,29 @@ namespace Ex3.Models
         }
 
         /**
+         * param - file name
+         * the function get file name, open path and check if the file exist.
+         */
+        public void OpenFile(string fileName)
+        {
+            filePath = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, fileName));
+            if (File.Exists(filePath)) File.Delete(filePath);
+        }
+
+        /**
          * param :string fileName, string lon, string lat, string throttle, string rudder
          * the fnction open file and save the parameter
          */
-        public void WriteToFile(string fileName, string lon, string lat,
+        public void WriteToFile(string lon, string lat,
             string throttle, string rudder)
         {
-            string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, fileName));
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
             {
                 file.WriteLine(lon + "," + lat + "," + throttle + "," + rudder);
-               
+
             }
         }
+
 
         /**
          * param: fileName
@@ -83,6 +95,5 @@ namespace Ex3.Models
             }
             reader = fromFile.GetEnumerator();
         }
-    }
-       
+    }   
 }

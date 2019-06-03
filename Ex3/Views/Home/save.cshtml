@@ -4,12 +4,20 @@
 }
 
 
-<canvas id="myCanvas" style="background-size:100% 100%"></canvas>
+<canvas id="myCanvas" style="position:absolute"></canvas>
 <script>
+
+        myCanvas.setAttribute('width', window.innerWidth)
+        myCanvas.setAttribute('height', window.innerHeight)
+        var dimension = [document.documentElement.clientWidth, document.documentElement.clientHeight];
+        var can = document.getElementById("myCanvas");
+        can.width = dimension[0];
+        can.height = dimension[1];
+        var ctx = can.getContext("2d");
+
         var prevLon=null;
         var prevLat=null;
-        var can = document.getElementById("myCanvas");
-        var ctx = can.getContext("2d");
+
 
          /**
          * the function draw point on the canvas
@@ -26,7 +34,7 @@
         /**
          * the function draw line from the old lon lat to new
          * lon lat values
-         * newlon val 
+         * newlon val
          * newlat val
          */
         function drawLine(newlon, newlat) {
@@ -38,7 +46,7 @@
         }
 
         /**
-         * the main function = 
+         * the main function =
          * set the time interval
          * if bigger than 0 - call mytimer with time intervl - repeat the function for x time
          * else call my timer once.
@@ -55,8 +63,8 @@
                     $xml = $(xmlDoc);
                     lon = $xml.find("Lon").text();
                     lat = $xml.find("Lat").text();
-                    var newlon = (parseFloat(lon) + 180) * (can.width/360);
-                    var newlat = (parseFloat(lat) + 90) * (can.height/180);
+                    var newlon = Math.abs((can.width / 360) * (parseFloat(lon) + 180));
+                    var newlat = Math.abs((can.height / 180) * (parseFloat(lat) - 90));
                     if (prevLat == null || prevLon == null) {
                         drawPoint(newlon, newlat);
                     }

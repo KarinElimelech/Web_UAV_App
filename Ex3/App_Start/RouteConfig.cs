@@ -15,13 +15,13 @@ namespace Ex3
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{id}",
+                url: "{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
-            routes.MapRoute("display", "{controller}/display/{ip}/{port}/{time}",
+            routes.MapRoute("display", "display/{ip}/{port}/{time}",
                 defaults: new { Controller = "Home", action = "display", time = 0 });
 
-            routes.MapRoute("save", "{controller}/save/{ip}/{port}/{rate}/{time}/{fileName}",
+            routes.MapRoute("save", "save/{ip}/{port}/{rate}/{time}/{fileName}",
                 defaults: new { Controller = "Home", action = "save" });
         }
     }

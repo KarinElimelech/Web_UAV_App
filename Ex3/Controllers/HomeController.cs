@@ -50,7 +50,7 @@ namespace Ex3.Controllers
             client.Open(ip, port);
             ViewBag.time = rate;
             timer.Interval = time;
-            Session["file"] = fileName;
+            Info.Instance.OpenFile(fileName);
             return View();
         }
 
@@ -72,7 +72,7 @@ namespace Ex3.Controllers
             {
                 string throttle = client["get /controls/engines/current-engine/throttle\r\n"];
                 string rudder = client["get /controls/flight/rudder\r\n"];
-                flightInfo.WriteToFile(Convert.ToString(Session["file"]),lon,lat,throttle,rudder);
+                flightInfo.WriteToFile(lon,lat,throttle,rudder);
             }
             List<string> param = new List<string>();
             param.Add(lon);
