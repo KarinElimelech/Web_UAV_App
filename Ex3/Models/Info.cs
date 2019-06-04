@@ -45,6 +45,9 @@ namespace Ex3.Models
                 }
                 else
                 {
+                    fromFile.Clear();
+                    fromFile = null;
+                    reader = null;
                     return "END";
                 }
             }
