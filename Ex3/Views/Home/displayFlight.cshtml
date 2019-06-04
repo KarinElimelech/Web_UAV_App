@@ -14,7 +14,8 @@
         can.height = dimension[1];
         var ctx = can.getContext("2d");
         var prevLon=null;
-        var prevLat=null;
+        var prevLat = null;
+        var interval;
 
 
 
@@ -65,11 +66,11 @@
                     $xml = $(xmlDoc);
                     if ($xml.find("error").text()) {
                         alert("Error! file not found");
-                        while (true) {}
+                        clearInterval(interval);
                     }
                     else if ($xml.find("END").text()) {
                         alert("Done!");
-                        while (true) {}
+                        clearInterval(interval);
                     }
                     else {
                         lon = $xml.find("Lon").text();
@@ -88,7 +89,7 @@
                 });
             });
             if (IntervalTime != 0) {
-                setInterval(myTimer, IntervalTime);
+                interval = setInterval(myTimer, IntervalTime);
             }
             myTimer();
             }

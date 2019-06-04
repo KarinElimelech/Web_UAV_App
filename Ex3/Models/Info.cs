@@ -10,7 +10,6 @@ namespace Ex3.Models
     public class Info
     {
         private static Info instance = null;
-        public const string SCENARIO_FILE = "~/App_Data/{0}.txt";
         private List<string> fromFile = null;
         private IEnumerator reader = null;
         string filePath;
@@ -57,7 +56,7 @@ namespace Ex3.Models
          */
         public void OpenFile(string fileName)
         {
-            filePath = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, fileName));
+            filePath = AppDomain.CurrentDomain.BaseDirectory + @"\" + fileName;
             if (File.Exists(filePath)) File.Delete(filePath);
         }
 
@@ -81,10 +80,10 @@ namespace Ex3.Models
          * the function get file name
          * open and read from the file to list.
          */
-        public void ReadData(string filename)
+        public void ReadData(string fileName)
         {
             fromFile = new List<string>();
-            string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, filename));
+            string path = AppDomain.CurrentDomain.BaseDirectory + @"\" + fileName;
             using (System.IO.StreamReader fileReader = new System.IO.StreamReader(path, true))
             {
                 string line;
